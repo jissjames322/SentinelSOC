@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}RedEye — Alerts{% endblock %}
+{% block page_icon %}<i class="bi bi-shield-exclamation"></i>{% endblock %}
+{% block page_title %}Security Alerts{% endblock %}
+
+{% block content %}
+
+<!-- Alert Stats -->
+<div class="grid-4 mb-3">
+    <div class="stat-card accent-red animate-in stagger-1">
+        <div class="stat-icon"><i class="bi bi-exclamation-circle"></i></div>
+        <div class="stat-value" id="alert-stat-total">—</div>
+        <div class="stat-label">Total Alerts</div>
+    </div>
+    <div class="stat-card accent-warning animate-in stagger-2">
+        <div class="stat-icon"><i class="bi bi-clock"></i></div>
+        <div class="stat-value" id="alert-stat-unresolved">—</div>
+        <div class="stat-label">Unresolved</div>
+    </div>
+    <div class="stat-card accent-purple animate-in stagger-3">
+        <div class="stat-icon"><i class="bi bi-shield-x"></i></div>
+        <div class="stat-value" id="alert-stat-critical">—</div>
+        <div class="stat-label">Critical</div>
+    </div>
+    <div class="stat-card accent-green animate-in stagger-4">
+        <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+        <div class="stat-value" id="alert-stat-resolved">—</div>
+        <div class="stat-label">Resolved</div>
+    </div>
+</div>
+
+<!-- Alerts Table -->
+<div class="glass-card animate-in stagger-3">
+    <div class="card-header-custom">
+        <div class="card-title"><i class="bi bi-shield-exclamation"></i> Alert Feed</div>
+        <div class="d-flex gap-2">
+            <select class="sentinel-select" id="alert-filter-severity" style="width:140px; padding:6px 12px; font-size:12px;" onchange="RedEye.Alerts.filter()">
+                <option value="">All Severity</option>
+                <option value="CRITICAL">Critical</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+            </select>
+        </div>
+    </div>
+    <table class="sentinel-table">
+        <thead>
+            <tr>
+                <th>Severity</th>
+                <th>Title</th>
+                <th>IP</th>
+                <th>Rule</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="alerts-table-body">
+            <tr>
+                <td colspan="7" class="text-center text-muted" style="padding:40px;">
+                    <div class="spinner-sentinel"></div>
+                    <div class="mt-1">Loading alerts...</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="pagination-sentinel" id="alerts-pagination"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    RedEye.Alerts.init();
+});
+</script>
+{% endblock %}

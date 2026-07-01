@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}RedEye — Event Logs{% endblock %}
+{% block page_icon %}<i class="bi bi-file-earmark-text"></i>{% endblock %}
+{% block page_title %}Event Logs{% endblock %}
+
+{% block content %}
+
+<!-- Filters -->
+<div class="glass-card mb-3 animate-in">
+    <div class="d-flex align-center gap-2 flex-wrap">
+        <select class="sentinel-select" id="log-filter-source" style="width:150px; padding:8px 12px; font-size:13px;" onchange="RedEye.Logs.filter()">
+            <option value="">All Sources</option>
+            <option value="MIS">MIS</option>
+            <option value="CPANEL">cPanel</option>
+            <option value="APACHE">Apache</option>
+            <option value="NGINX">Nginx</option>
+            <option value="SSH">SSH</option>
+            <option value="GENERIC">Generic</option>
+        </select>
+        <select class="sentinel-select" id="log-filter-status" style="width:150px; padding:8px 12px; font-size:13px;" onchange="RedEye.Logs.filter()">
+            <option value="">All Status</option>
+            <option value="SUCCESS">Success</option>
+            <option value="FAILED">Failed</option>
+        </select>
+        <input type="text" class="sentinel-input" id="log-filter-search" placeholder="Search by IP or username..." style="width:250px; padding:8px 12px; font-size:13px;" oninput="RedEye.Logs.filter()">
+        <button class="btn-sentinel btn-sentinel-secondary btn-sentinel-sm" onclick="RedEye.Logs.refresh()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<!-- Events Table -->
+<div class="glass-card animate-in stagger-1">
+    <div class="card-header-custom">
+        <div class="card-title"><i class="bi bi-list-ul"></i> Security Events</div>
+        <span class="text-muted" style="font-size:12px;" id="log-total-count">—</span>
+    </div>
+    <table class="sentinel-table">
+        <thead>
+            <tr>
+                <th>IP Address</th>
+                <th>Username</th>
+                <th>Event Type</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="logs-table-body">
+            <tr>
+                <td colspan="7" class="text-center text-muted" style="padding:40px;">
+                    <div class="spinner-sentinel"></div>
+                    <div class="mt-1">Loading events...</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="pagination-sentinel" id="logs-pagination"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    RedEye.Logs.init();
+});
+</script>
+{% endblock %}

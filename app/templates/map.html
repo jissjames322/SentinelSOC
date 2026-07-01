@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}RedEye — Threat Map{% endblock %}
+{% block page_icon %}<i class="bi bi-globe2"></i>{% endblock %}
+{% block page_title %}Global Threat Map{% endblock %}
+
+{% block content %}
+
+<!-- Map Controls -->
+<div class="glass-card mb-3 animate-in">
+    <div class="d-flex align-center justify-between flex-wrap gap-2">
+        <div class="d-flex align-center gap-2">
+            <span class="text-secondary" style="font-size:13px;">
+                <i class="bi bi-geo-alt-fill text-accent"></i>
+                <span id="map-ip-count">0</span> IPs plotted
+            </span>
+            <span class="text-muted">|</span>
+            <span class="text-secondary" style="font-size:13px;">
+                <i class="bi bi-flag-fill text-accent"></i>
+                <span id="map-country-count">0</span> countries
+            </span>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn-sentinel btn-sentinel-danger btn-sentinel-sm" onclick="RedEye.ThreatMap.clearData()" title="Clear all IP threat coordinates and reset data">
+                <i class="bi bi-trash3-fill"></i> Clear Plots
+            </button>
+            <button class="btn-sentinel btn-sentinel-secondary btn-sentinel-sm" onclick="RedEye.ThreatMap.refresh()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Full Page Map -->
+<div class="glass-card animate-in stagger-1" style="padding:0; overflow:hidden;">
+    <div class="map-container map-container-lg" id="threat-map"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    RedEye.ThreatMap.init();
+});
+</script>
+{% endblock %}

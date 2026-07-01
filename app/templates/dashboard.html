@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}SentinelSOC — Dashboard{% endblock %}
+{% block page_icon %}<i class="bi bi-grid-1x2-fill"></i>{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- KPI Stats Row -->
+<div class="grid-5 mb-3" id="stats-row">
+    <div class="stat-card accent-blue animate-in stagger-1">
+        <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
+        <div class="stat-value" id="stat-events">—</div>
+        <div class="stat-label">Total Events</div>
+    </div>
+    <div class="stat-card accent-red animate-in stagger-2">
+        <div class="stat-icon"><i class="bi bi-shield-exclamation"></i></div>
+        <div class="stat-value" id="stat-alerts">—</div>
+        <div class="stat-label">Active Alerts</div>
+    </div>
+    <div class="stat-card accent-purple animate-in stagger-3">
+        <div class="stat-icon"><i class="bi bi-hdd-network"></i></div>
+        <div class="stat-value" id="stat-ips">—</div>
+        <div class="stat-label">Unique IPs</div>
+    </div>
+    <div class="stat-card accent-green animate-in stagger-4">
+        <div class="stat-icon"><i class="bi bi-globe2"></i></div>
+        <div class="stat-value" id="stat-countries">—</div>
+        <div class="stat-label">Countries</div>
+    </div>
+    <div class="stat-card accent-warning animate-in stagger-5">
+        <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+        <div class="stat-value" id="stat-highrisk">—</div>
+        <div class="stat-label">High Risk IPs</div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid-2 mb-3">
+    <!-- Event Timeline -->
+    <div class="glass-card animate-in stagger-2">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-graph-up"></i> Event Timeline</div>
+            <span class="text-muted" style="font-size:12px;">Last 30 days</span>
+        </div>
+        <div class="chart-container">
+            <canvas id="timeline-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Risk Distribution -->
+    <div class="glass-card animate-in stagger-3">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-pie-chart"></i> Risk Distribution</div>
+        </div>
+        <div class="chart-container" style="height:260px;">
+            <canvas id="risk-chart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Map and Recent Events Row -->
+<div class="grid-2 mb-3">
+    <!-- Mini Threat Map -->
+    <div class="glass-card animate-in stagger-4">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-geo-alt"></i> Threat Map</div>
+            <a href="/map" class="btn-sentinel btn-sentinel-secondary btn-sentinel-sm">
+                <i class="bi bi-arrows-fullscreen"></i> Full Map
+            </a>
+        </div>
+        <div class="map-container" id="dashboard-map" style="height:320px;"></div>
+    </div>
+
+    <!-- Recent Events -->
+    <div class="glass-card animate-in stagger-5">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-clock-history"></i> Recent Events</div>
+            <a href="/logs" class="btn-sentinel btn-sentinel-secondary btn-sentinel-sm">
+                View All
+            </a>
+        </div>
+        <div id="recent-events-container">
+            <table class="sentinel-table">
+                <thead>
+                    <tr>
+                        <th>IP</th>
+                        <th>User</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="recent-events-body">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted" style="padding:32px;">
+                            <div class="spinner-sentinel"></div>
+                            <div class="mt-1">Loading events...</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Top Countries Row -->
+<div class="glass-card animate-in stagger-5 mb-3">
+    <div class="card-header-custom">
+        <div class="card-title"><i class="bi bi-flag"></i> Top Countries</div>
+    </div>
+    <div class="chart-container" style="height:250px;">
+        <canvas id="countries-chart"></canvas>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    RedEye.Dashboard.init();
+});
+</script>
+{% endblock %}

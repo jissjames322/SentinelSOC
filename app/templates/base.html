@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RedEye — IP Intelligence Platform for Geolocation and Threat Monitoring">
+    <title>{% block title %}RedEye — IP Intelligence Platform{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Leaflet.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Theme stylesheet -->
+    <link class="theme-stylesheet" rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.0.6">
+
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+    <!-- ============ PRELOADER ============ -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo-container">
+                <img src="{{ url_for('static', filename='img/redeye.png') }}" alt="RedEye Logo" class="preloader-logo">
+                <div class="preloader-ring"></div>
+            </div>
+            <div class="preloader-title">RedEye</div>
+            <div class="preloader-subtitle">IP INTELLIGENCE PLATFORM</div>
+            <div class="preloader-bar">
+                <div class="preloader-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+<div class="app-wrapper">
+
+    <!-- ============ SIDEBAR ============ -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo-wrapper">
+                <img src="{{ url_for('static', filename='img/redeye.png') }}" alt="RedEye Logo" class="brand-logo-img">
+            </div>
+            <div>
+                <div class="brand-text">RedEye</div>
+                <div class="brand-version">v1.0.0</div>
+            </div>
+        </div>
+
+        <div class="sidebar-nav">
+            <div class="nav-section-label">Overview</div>
+            <a href="/" class="{% if request.endpoint == 'main.dashboard' %}active{% endif %}" id="nav-dashboard">
+                <i class="bi bi-grid-1x2-fill"></i> Dashboard
+            </a>
+            <a href="/lookup" class="{% if request.endpoint == 'main.lookup' %}active{% endif %}" id="nav-lookup">
+                <i class="bi bi-search-heart"></i> IP Lookup
+            </a>
+
+            <div class="nav-section-label">Monitoring</div>
+            <a href="/logs" class="{% if request.endpoint == 'main.logs' %}active{% endif %}" id="nav-logs">
+                <i class="bi bi-file-earmark-text"></i> Event Logs
+            </a>
+            <a href="/map" class="{% if request.endpoint == 'main.threat_map' %}active{% endif %}" id="nav-map">
+                <i class="bi bi-globe2"></i> Threat Map
+            </a>
+            <a href="/alerts" class="{% if request.endpoint == 'main.alerts' %}active{% endif %}" id="nav-alerts">
+                <i class="bi bi-shield-exclamation"></i> Alerts
+            </a>
+
+            <div class="nav-section-label">Data</div>
+            <a href="/history" class="{% if request.endpoint == 'main.history' %}active{% endif %}" id="nav-history">
+                <i class="bi bi-clock-history"></i> IP History
+            </a>
+            <a href="/import" class="{% if request.endpoint == 'main.import_logs' %}active{% endif %}" id="nav-import">
+                <i class="bi bi-cloud-upload"></i> Import Logs
+            </a>
+            <a href="/reports" class="{% if request.endpoint == 'main.reports' %}active{% endif %}" id="nav-reports">
+                <i class="bi bi-bar-chart-line"></i> Reports
+            </a>
+
+            <div class="nav-section-label">System</div>
+            <a href="/settings" class="{% if request.endpoint == 'main.settings' %}active{% endif %}" id="nav-settings">
+                <i class="bi bi-gear-fill"></i> Settings
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="main-content">
+
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="header-left">
+                <h1 class="page-title">
+                    {% block page_icon %}<i class="bi bi-grid-1x2-fill"></i>{% endblock %}
+                    {% block page_title %}Dashboard{% endblock %}
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="header-search">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Quick IP lookup..." id="quick-search-input">
+                </div>
+                <button class="header-btn" id="btn-notifications" title="Alerts">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge-dot" id="alert-badge" style="display:none;"></span>
+                </button>
+                <button class="header-btn" id="btn-refresh" title="Refresh">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            {% block content %}{% endblock %}
+        </div>
+
+    </main>
+
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+{% block scripts_extra %}{% endblock %}
+
+</body>
+</html>

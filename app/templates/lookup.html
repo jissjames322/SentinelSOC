@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}RedEye — IP Intelligence Lookup{% endblock %}
+{% block page_icon %}<i class="bi bi-search-heart"></i>{% endblock %}
+{% block page_title %}IP Intelligence Lookup{% endblock %}
+
+{% block content %}
+
+<!-- Search Section -->
+<div class="glass-card mb-3 animate-in">
+    <div class="d-flex align-center justify-between flex-wrap gap-2">
+        <div class="lookup-search-box" style="flex:1; min-width:300px;">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="ip-search-input" placeholder="Enter IP address (e.g., 8.8.8.8)" autocomplete="off">
+            <button class="search-btn" id="ip-search-btn" onclick="RedEye.Lookup.search()">
+                <i class="bi bi-search"></i> Lookup
+            </button>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn-sentinel btn-sentinel-secondary btn-sentinel-sm" onclick="RedEye.Lookup.searchMyIP()" title="Look up your public IP">
+                <i class="bi bi-pc-display"></i> My IP
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Results Container (hidden initially) -->
+<div id="lookup-results" style="display:none;">
+
+    <!-- Quick Summary Bar -->
+    <div class="glass-card mb-3 animate-in" id="ip-summary-bar">
+        <div class="d-flex align-center justify-between flex-wrap gap-2">
+            <div class="d-flex align-center gap-2">
+                <span style="font-size:32px;" id="result-flag">🌐</span>
+                <div>
+                    <div style="font-size:22px; font-weight:800; letter-spacing:-0.5px;" id="result-ip">—</div>
+                    <div class="text-secondary" style="font-size:13px;" id="result-location">—</div>
+                </div>
+            </div>
+            <div class="d-flex align-center gap-3">
+                <div id="threat-badges" class="d-flex gap-2 flex-wrap"></div>
+                <div class="risk-meter" style="min-width:200px;">
+                    <div>
+                        <div class="risk-score-display" id="result-risk-score">0</div>
+                        <div class="text-muted" style="font-size:11px; text-transform:uppercase; letter-spacing:1px;">Risk</div>
+                    </div>
+                    <div class="risk-meter-bar">
+                        <div class="risk-meter-fill" id="result-risk-bar" style="width:0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maps and Details Grid -->
+    <div class="intel-grid mb-3">
+
+        <!-- Left Column: Maps -->
+        <div>
+            <!-- Google Maps Embed -->
+            <div class="glass-card mb-3 animate-in stagger-1">
+                <div class="card-header-custom">
+                    <div class="card-title"><i class="bi bi-geo-alt-fill"></i> Google Maps — Geolocation</div>
+                    <button class="btn-sentinel btn-sentinel-secondary btn-sentinel-sm" onclick="RedEye.Lookup.openGoogleMaps()" title="Open in Google Maps">
+                        <i class="bi bi-box-arrow-up-right"></i> Open
+                    </button>
+                </div>
+                <div class="map-container" id="google-map-container">
+                    <iframe id="google-map-iframe" src="" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+
+            <!-- Leaflet Interactive Map -->
+            <div class="glass-card animate-in stagger-2">
+                <div class="card-header-custom">
+                    <div class="card-title"><i class="bi bi-map"></i> Interactive Map</div>
+                </div>
+                <div class="map-container" id="lookup-leaflet-map"></div>
+            </div>
+        </div>
+
+        <!-- Right Column: Intelligence Details -->
+        <div>
+            <!-- Location Details -->
+            <div class="glass-card mb-3 animate-in stagger-1">
+                <div class="card-header-custom">
+                    <div class="card-title"><i class="bi bi-geo-alt"></i> Location Details</div>
+                </div>
+                <div id="intel-location">
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">Country</span>
+                        <span class="intel-detail-value" id="detail-country">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">State / Region</span>
+                        <span class="intel-detail-value" id="detail-state">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">City</span>
+                        <span class="intel-detail-value" id="detail-city">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">Postal Code</span>
+                        <span class="intel-detail-value" id="detail-postal">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">Coordinates</span>
+                        <span class="intel-detail-value" id="detail-coords">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">Timezone</span>
+                        <span class="intel-detail-value" id="detail-timezone">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Details -->
+            <div class="glass-card mb-3 animate-in stagger-2">
+                <div class="card-header-custom">
+                    <div class="card-title"><i class="bi bi-hdd-network"></i> Network Details</div>
+                </div>
+                <div id="intel-network">
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">Hostname</span>
+                        <span class="intel-detail-value" id="detail-hostname">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">ASN</span>
+                        <span class="intel-detail-value" id="detail-asn">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">ASN Description</span>
+                        <span class="intel-detail-value" id="detail-asn-desc">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">Network</span>
+                        <span class="intel-detail-value" id="detail-network">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">CIDR</span>
+                        <span class="intel-detail-value" id="detail-cidr">—</span>
+                    </div>
+                    <div class="intel-detail-row">
+                        <span class="intel-detail-label">Organization</span>
+                        <span class="intel-detail-value" id="detail-org">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Assessment -->
+            <div class="glass-card animate-in stagger-3">
+                <div class="card-header-custom">
+                    <div class="card-title"><i class="bi bi-shield-check"></i> Risk Assessment</div>
+                </div>
+                <div id="intel-risk">
+                    <div class="d-flex align-center justify-between mb-2">
+                        <span class="text-muted" style="font-size:12px;">RISK SCORE</span>
+                        <span class="risk-score-display" id="detail-risk-score" style="font-size:36px;">0</span>
+                    </div>
+                    <div class="risk-meter-bar mb-2" style="height:10px;">
+                        <div class="risk-meter-fill" id="detail-risk-bar" style="width:0%;"></div>
+                    </div>
+                    <div class="text-muted mb-2" style="font-size:12px; text-transform:uppercase; letter-spacing:1px;">
+                        Level: <strong id="detail-risk-level" class="text-accent">—</strong>
+                    </div>
+                    <div id="risk-factors-list" class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="lookup-loading" style="display:none;">
+    <div class="glass-card" style="text-align:center; padding:60px;">
+        <div class="spinner-sentinel spinner-lg"></div>
+        <div class="loading-text mt-2">Running intelligence lookup...</div>
+        <div class="text-muted mt-1" style="font-size:12px;">Querying GeoIP, RDAP, DNS, TOR, VPN databases</div>
+    </div>
+</div>
+
+<!-- Error Container -->
+<div id="lookup-error" style="display:none;">
+    <div class="glass-card" style="text-align:center; padding:48px;">
+        <i class="bi bi-exclamation-triangle" style="font-size:48px; color:var(--accent-danger);"></i>
+        <h4 class="mt-2 text-danger" id="error-title">Lookup Failed</h4>
+        <p class="text-secondary mt-1" id="error-message">An error occurred.</p>
+        <button class="btn-sentinel btn-sentinel-primary mt-2" onclick="RedEye.Lookup.reset()">
+            <i class="bi bi-arrow-clockwise"></i> Try Again
+        </button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    RedEye.Lookup.init();
+});
+</script>
+{% endblock %}

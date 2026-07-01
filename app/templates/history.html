@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}RedEye — IP History{% endblock %}
+{% block page_icon %}<i class="bi bi-clock-history"></i>{% endblock %}
+{% block page_title %}IP Lookup History{% endblock %}
+
+{% block content %}
+
+<div class="glass-card animate-in">
+    <div class="card-header-custom">
+        <div class="card-title"><i class="bi bi-clock-history"></i> All Tracked IPs</div>
+        <div class="d-flex gap-2">
+            <input type="text" class="sentinel-input" id="history-search" placeholder="Search IPs..." style="width:220px; padding:8px 12px; font-size:13px;" oninput="RedEye.History.search()">
+            <button class="btn-sentinel btn-sentinel-secondary btn-sentinel-sm" onclick="RedEye.History.refresh()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+    <table class="sentinel-table">
+        <thead>
+            <tr>
+                <th>IP Address</th>
+                <th>Hostname</th>
+                <th>Country</th>
+                <th>City</th>
+                <th>ASN</th>
+                <th>Risk</th>
+                <th>Lookups</th>
+                <th>Last Seen</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="history-table-body">
+            <tr>
+                <td colspan="9" class="text-center text-muted" style="padding:40px;">
+                    <div class="spinner-sentinel"></div>
+                    <div class="mt-1">Loading history...</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="pagination-sentinel" id="history-pagination"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    RedEye.History.init();
+});
+</script>
+{% endblock %}

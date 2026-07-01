@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}RedEye — Reports{% endblock %}
+{% block page_icon %}<i class="bi bi-bar-chart-line"></i>{% endblock %}
+{% block page_title %}Reports & Analytics{% endblock %}
+
+{% block content %}
+
+<!-- Charts Row 1 -->
+<div class="grid-2 mb-3">
+    <div class="glass-card animate-in stagger-1">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-graph-up"></i> Events Over Time</div>
+        </div>
+        <div class="chart-container">
+            <canvas id="report-timeline-chart"></canvas>
+        </div>
+    </div>
+    <div class="glass-card animate-in stagger-2">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-pie-chart"></i> Events by Source</div>
+        </div>
+        <div class="chart-container">
+            <canvas id="report-source-chart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="grid-2 mb-3">
+    <div class="glass-card animate-in stagger-3">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-bar-chart"></i> Events by Status</div>
+        </div>
+        <div class="chart-container">
+            <canvas id="report-status-chart"></canvas>
+        </div>
+    </div>
+    <div class="glass-card animate-in stagger-4">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-globe"></i> Top Countries</div>
+        </div>
+        <div class="chart-container">
+            <canvas id="report-countries-chart"></canvas>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    RedEye.Reports.init();
+});
+</script>
+{% endblock %}

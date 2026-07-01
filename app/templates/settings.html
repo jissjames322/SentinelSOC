@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}RedEye — Settings{% endblock %}
+{% block page_icon %}<i class="bi bi-gear-fill"></i>{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+
+<div class="settings-grid">
+    <!-- System Info -->
+    <div class="glass-card animate-in stagger-1">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-info-circle"></i> System Information</div>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">Application</span>
+            <span class="intel-detail-value">RedEye</span>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">Version</span>
+            <span class="intel-detail-value">1.0.0</span>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">Python</span>
+            <span class="intel-detail-value">3.12</span>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">Framework</span>
+            <span class="intel-detail-value">Flask</span>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">Database</span>
+            <span class="intel-detail-value">SQLite</span>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">GeoIP Database</span>
+            <span class="intel-detail-value">GeoLite2-City</span>
+        </div>
+    </div>
+
+    <!-- Database Stats -->
+    <div class="glass-card animate-in stagger-2">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-database"></i> Database Statistics</div>
+            <button class="btn-sentinel btn-sentinel-secondary btn-sentinel-sm" onclick="RedEye.Settings.refreshStats()">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">IP Addresses</span>
+            <span class="intel-detail-value" id="settings-ip-count">—</span>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">Security Events</span>
+            <span class="intel-detail-value" id="settings-event-count">—</span>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">Alerts</span>
+            <span class="intel-detail-value" id="settings-alert-count">—</span>
+        </div>
+        <div class="intel-detail-row">
+            <span class="intel-detail-label">High Risk IPs</span>
+            <span class="intel-detail-value" id="settings-highrisk-count">—</span>
+        </div>
+    </div>
+
+    <!-- API Health -->
+    <div class="glass-card animate-in stagger-3">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-heart-pulse"></i> API Health</div>
+            <button class="btn-sentinel btn-sentinel-secondary btn-sentinel-sm" onclick="RedEye.Settings.checkHealth()">
+                <i class="bi bi-arrow-clockwise"></i> Check
+            </button>
+        </div>
+        <div id="health-status">
+            <div class="empty-state" style="padding:24px;">
+                <p class="text-muted">Click check to test API health</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="glass-card animate-in stagger-4">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-lightning-charge"></i> Quick Actions</div>
+        </div>
+        <div class="d-flex flex-wrap gap-2" style="flex-direction:column;">
+            <a href="/import" class="btn-sentinel btn-sentinel-secondary" style="justify-content:flex-start;">
+                <i class="bi bi-cloud-upload"></i> Import Logs
+            </a>
+            <a href="/lookup" class="btn-sentinel btn-sentinel-secondary" style="justify-content:flex-start;">
+                <i class="bi bi-search-heart"></i> IP Lookup
+            </a>
+            <a href="/map" class="btn-sentinel btn-sentinel-secondary" style="justify-content:flex-start;">
+                <i class="bi bi-globe2"></i> Open Threat Map
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    RedEye.Settings.init();
+});
+</script>
+{% endblock %}

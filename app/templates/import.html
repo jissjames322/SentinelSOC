@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}RedEye — Bulk IP Import{% endblock %}
+{% block page_icon %}<i class="bi bi-cloud-upload"></i>{% endblock %}
+{% block page_title %}Bulk IP List Import{% endblock %}
+
+{% block content %}
+
+<div class="grid-2">
+    <!-- Upload Form -->
+    <div class="glass-card animate-in stagger-1">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-upload"></i> Upload Plain Text IP List</div>
+        </div>
+        <form id="import-form" onsubmit="RedEye.Import.submit(event)">
+            <!-- Hidden inputs -->
+            <input type="hidden" id="import-source" name="source" value="bulk">
+            <input type="file" id="import-file" name="logfile" accept=".txt,.log,.csv" style="display:none;" required>
+            
+            <!-- Designer upload area -->
+            <div class="drag-drop-area" id="drop-area" onclick="document.getElementById('import-file').click()">
+                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                <div class="upload-text">Choose a plain text IP list file</div>
+                <div class="upload-subtext">Accepts one IP address per line (.txt / .log)</div>
+                <div class="selected-file-name" id="selected-file-name">No file chosen</div>
+            </div>
+
+            <button type="submit" class="btn-sentinel btn-sentinel-primary" id="import-submit-btn" style="width:100%;">
+                <i class="bi bi-cloud-upload"></i> Ingest & Plot Threat Map
+            </button>
+        </form>
+
+        <!-- Progress -->
+        <div class="import-progress mt-2" id="import-progress" style="display:none;">
+            <div class="d-flex justify-between mb-1">
+                <span class="text-secondary" style="font-size:12px;">Processing...</span>
+                <span class="text-accent" style="font-size:12px;" id="import-progress-text">0%</span>
+            </div>
+            <div class="progress-bar-sentinel">
+                <div class="progress-bar-fill" id="import-progress-bar"></div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="import-results" style="display:none;" class="mt-2">
+            <div class="glass-card" style="background: rgba(52, 211, 153, 0.08); border-color: rgba(52, 211, 153, 0.2);">
+                <div class="d-flex align-center gap-2 mb-1">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size:20px;"></i>
+                    <strong class="text-success">Import Complete</strong>
+                </div>
+                <div class="text-secondary" style="font-size:13px;">
+                    <div>Total lines processed: <strong id="result-total">0</strong></div>
+                    <div>Successfully Ingested: <strong class="text-success" id="result-imported">0</strong></div>
+                    <div>Failed/Skipped: <strong class="text-danger" id="result-failed">0</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supported Formats -->
+    <div class="glass-card animate-in stagger-2">
+        <div class="card-header-custom">
+            <div class="card-title"><i class="bi bi-info-circle"></i> Instructions</div>
+        </div>
+        <div class="mb-2">
+            <p class="text-secondary" style="font-size:14px; margin-bottom:12px;">
+                Upload a plain text file containing a list of IP addresses. Each line should contain exactly one IP address. Empty lines or lines starting with a hash symbol (<code>#</code>) will be skipped automatically.
+            </p>
+            <div class="glass-card" style="background:rgba(255,255,255,0.02); padding:16px; font-family:monospace; font-size:12px; color:var(--text-secondary);">
+                # Sample IP List File<br>
+                8.8.8.8<br>
+                1.1.1.1<br>
+                203.0.113.195<br>
+                198.51.100.45
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    RedEye.Import.init();
+    
+    // File upload change listener
+    const fileInput = document.getElementById('import-file');
+    const nameEl = document.getElementById('selected-file-name');
+    const dropArea = document.getElementById('drop-area');
+    
+    if (fileInput && nameEl) {
+        fileInput.addEventListener('change', () => {
+            nameEl.textContent = fileInput.files[0] ? fileInput.files[0].name : 'No file chosen';
+        });
+    }
+    
+    // Drag & Drop handlers
+    if (dropArea) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropArea.style.borderColor = 'var(--accent-primary)';
+                dropArea.style.background = 'rgba(226, 106, 44, 0.08)';
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropArea.style.borderColor = '';
+                dropArea.style.background = '';
+            }, false);
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length && fileInput) {
+                fileInput.files = files;
+                nameEl.textContent = files[0].name;
+            }
+        }, false);
+    }
+});
+</script>
+{% endblock %}
