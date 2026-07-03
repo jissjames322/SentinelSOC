@@ -1144,9 +1144,54 @@ const RedEye = (() => {
         }
     };
 
+    // ========== Mobile Sidebar Toggle ==========
+    const SidebarToggle = {
+        init() {
+            const toggleBtn = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (!toggleBtn || !sidebar) return;
+
+            // Toggle sidebar on hamburger click
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                if (overlay) overlay.classList.toggle('active');
+            });
+
+            // Close sidebar when overlay is clicked
+            if (overlay) {
+                overlay.addEventListener('click', () => {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                });
+            }
+
+            // Close sidebar when a nav link is clicked (mobile)
+            const navLinks = sidebar.querySelectorAll('.sidebar-nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        if (overlay) overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            // Close sidebar on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    if (overlay) overlay.classList.remove('active');
+                }
+            });
+        }
+    };
+
     // ========== Global Init ==========
     document.addEventListener('DOMContentLoaded', () => {
         QuickSearch.init();
+        SidebarToggle.init();
     });
 
     window.addEventListener('load', () => {

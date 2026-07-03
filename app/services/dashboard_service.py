@@ -1,81 +1,110 @@
-import logging
-from datetime import datetime, timedelta, timezone
-from app.repositories.ip_repository import IPRepository
-from app.repositories.event_repository import EventRepository
-from app.repositories.alert_repository import AlertRepository
+from app.models import IPAddress, SecurityEvent, Alert
+from app.extensions import db
+from sqlalchemy import func
 
-logger = logging.getLogger(__name__)
 
 class DashboardService:
-    """Service to aggregate dashboard statistics and summaries from repositories."""
 
-    def __init__(self):
-        self.ip_repo = IPRepository()
-        self.event_repo = EventRepository()
-        self.alert_repo = AlertRepository()
 
-    def get_dashboard_data(self) -> dict:
-        """Collect all required statistics for the main dashboard view."""
-        try:
-            total_events = self.event_repo.count()
-            total_alerts = self.alert_repo.count_unresolved()
-            total_ips = self.ip_repo.count()
-            total_countries = len(self.ip_repo.get_country_stats())
+    def summary(self):
+
+        return {
+            "total_ips": IPAddress.query.count(),
+            "total_events": SecurityEvent.query.count(),
+            "total_alerts": Alert.query.count(),
+
+            "high_risk_ips": IPAddress.query.filter(
+                IPAddress.risk_score >= 70
+            ).count()
+        }
+    
+
+    def recent_events(self, limit=10):
+
+        events=(
+            SecurityEvent.query
+        .order_by(SecurityEvent.created_at.desc())
+        .limit(limit)
+        .all()
             
-            # High risk IPs count (risk score >= 70)
-            high_risk_ips = len(self.ip_repo.get_high_risk(threshold=70))
-            
-            # Recent events
-            recent_events_raw = self.event_repo.get_recent(limit=10)
-            recent_events = [e.to_dict() for e in recent_events_raw]
+        )
 
-            # Timeline data (last 30 days)
-            timeline = self.event_repo.get_timeline(days=30)
+        data = []
 
-            # Top countries
-            top_countries = self.ip_repo.get_country_stats()[:10]
+        for event in events:
 
-            # Risk distribution counts
-            all_ips = self.ip_repo.search("")  # Search all
-            risk_dist = {"low": 0, "medium": 0, "high": 0, "critical": 0}
-            for ip in all_ips:
-                lvl = (ip.risk_level or "LOW").lower()
-                if lvl in risk_dist:
-                    risk_dist[lvl] += 1
-                else:
-                    risk_dist["low"] += 1
+            data.append({
 
-            # Map data
-            map_data = self.ip_repo.get_map_data()
+                "username": event.username,
 
-            # Event stats summary by source/status
-            event_stats = self.event_repo.get_stats()
+            "event_type": event.event_type,
 
-            return {
-                "total_events": total_events,
-                "total_alerts": total_alerts,
-                "total_ips": total_ips,
-                "total_countries": total_countries,
-                "high_risk_ips": high_risk_ips,
-                "recent_events": recent_events,
-                "timeline": timeline,
-                "top_countries": top_countries,
-                "risk_distribution": risk_dist,
-                "map_data": map_data,
-                "event_stats": event_stats
+            "status": event.status,
+
+            "source": event.source,
+
+            "time": event.created_at,
+
+            "ip": event.ip_ref.ip if hasattr(event, 'ip_ref') and event.ip_ref else None
+            })
+        return data    
+    
+    def top_countries(self):
+
+        rows = (
+
+            db.session.query(
+
+                IPAddress.country,
+
+                func.count(IPAddress.id)
+
+            )
+
+            .group_by(IPAddress.country)
+
+            .all()
+
+        )
+
+        return [
+
+            {
+
+                "country": r[0],
+
+                "count": r[1]
+
             }
-        except Exception as e:
-            logger.exception("Failed to compile dashboard data")
-            return {
-                "total_events": 0,
-                "total_alerts": 0,
-                "total_ips": 0,
-                "total_countries": 0,
-                "high_risk_ips": 0,
-                "recent_events": [],
-                "timeline": [],
-                "top_countries": [],
-                "risk_distribution": {"low": 0, "medium": 0, "high": 0, "critical": 0},
-                "map_data": [],
-                "event_stats": {"total": 0, "by_status": {}, "by_source": {}, "by_type": {}}
-            }
+
+            for r in rows
+
+        ]
+
+    def get_risk_distribution(self):
+        return {
+            "low": IPAddress.query.filter(IPAddress.risk_score < 30).count(),
+            "medium": IPAddress.query.filter(IPAddress.risk_score >= 30, IPAddress.risk_score < 60).count(),
+            "high": IPAddress.query.filter(IPAddress.risk_score >= 60, IPAddress.risk_score < 80).count(),
+            "critical": IPAddress.query.filter(IPAddress.risk_score >= 80).count()
+        }
+
+    def get_dashboard_data(self):
+        from app.repositories.ip_repository import IPRepository
+        from app.repositories.event_repository import EventRepository
+        
+        summary = self.summary()
+        top_countries_list = self.top_countries()
+        
+        return {
+            "total_ips": summary["total_ips"],
+            "total_events": summary["total_events"],
+            "total_alerts": summary["total_alerts"],
+            "high_risk_ips": summary["high_risk_ips"],
+            "total_countries": len(top_countries_list),
+            "recent_events": self.recent_events(),
+            "timeline": EventRepository.get_timeline(30),
+            "risk_distribution": self.get_risk_distribution(),
+            "top_countries": top_countries_list,
+            "map_data": IPRepository.get_map_data()
+        }

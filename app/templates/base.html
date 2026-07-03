@@ -99,12 +99,18 @@
         </div>
     </nav>
 
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <!-- ============ MAIN CONTENT ============ -->
     <main class="main-content">
 
         <!-- Top Header Bar -->
         <header class="top-header">
             <div class="header-left">
+                <button class="sidebar-toggle" id="sidebar-toggle" title="Menu" aria-label="Toggle navigation">
+                    <i class="bi bi-list"></i>
+                </button>
                 <h1 class="page-title">
                     {% block page_icon %}<i class="bi bi-grid-1x2-fill"></i>{% endblock %}
                     {% block page_title %}Dashboard{% endblock %}

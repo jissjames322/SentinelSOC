@@ -1105,31 +1105,532 @@ body {
     width: 0%;
 }
 
-/* ---------- Responsive ---------- */
+/* ---------- Mobile Sidebar Toggle Button ---------- */
+.sidebar-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 22px;
+    transition: all var(--transition-normal);
+    flex-shrink: 0;
+}
+
+.sidebar-toggle:hover {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+/* ---------- Sidebar Overlay (Mobile Backdrop) ---------- */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity var(--transition-smooth);
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ---------- Responsive: Large Tablet (≤1200px) ---------- */
 @media (max-width: 1200px) {
     .grid-5 { grid-template-columns: repeat(3, 1fr); }
     .grid-4 { grid-template-columns: repeat(2, 1fr); }
     .intel-grid { grid-template-columns: 1fr; }
 }
 
+/* ---------- Responsive: Tablet (≤992px) ---------- */
+@media (max-width: 992px) {
+    .grid-5 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+
+    .page-content {
+        padding: 20px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 24px;
+    }
+
+    .header-search input {
+        width: 200px;
+    }
+
+    .header-search input:focus {
+        width: 240px;
+    }
+}
+
+/* ---------- Responsive: Mobile (≤768px) ---------- */
 @media (max-width: 768px) {
+    /* Show hamburger menu */
+    .sidebar-toggle {
+        display: flex;
+    }
+
+    /* Sidebar off-canvas */
     .sidebar {
         transform: translateX(-100%);
+        box-shadow: none;
     }
+
     .sidebar.open {
         transform: translateX(0);
+        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5);
     }
+
+    /* Main content full width */
     .main-content {
         margin-left: 0;
     }
-    .grid-2, .grid-3, .grid-4, .grid-5 {
-        grid-template-columns: 1fr;
+
+    /* Top header adjustments */
+    .top-header {
+        padding: 0 16px;
+        height: 56px;
     }
+
+    .page-title {
+        font-size: 16px;
+    }
+
+    /* Header search — collapse */
+    .header-search {
+        display: none;
+    }
+
+    .header-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 15px;
+    }
+
+    /* Page content */
     .page-content {
         padding: 16px;
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 56px);
     }
+
+    /* Glass cards fill available space when they're the only content */
+    .page-content > .glass-card:only-child,
+    .page-content > .glass-card:last-child {
+        flex: 1;
+    }
+
+    /* Center loading spinners inside table cells */
+    .sentinel-table tbody td[colspan] {
+        padding: 60px 16px !important;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Grids all single column */
+    .grid-2, .grid-3, .grid-4, .grid-5 {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Settings grid single column */
     .settings-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Glass cards */
+    .glass-card {
+        padding: 16px;
+    }
+
+    .glass-card .card-header-custom {
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .glass-card .card-title {
+        font-size: 14px;
+    }
+
+    /* Stat cards */
+    .stat-card {
+        padding: 16px 18px;
+    }
+
+    .stat-card .stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 22px;
+    }
+
+    .stat-card .stat-label {
+        font-size: 12px;
+    }
+
+    /* Tables — horizontal scroll wrapper */
+    .sentinel-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+
+    .sentinel-table thead,
+    .sentinel-table tbody,
+    .sentinel-table tr {
+        display: table;
+        width: 100%;
+        table-layout: auto;
+    }
+
+    .sentinel-table thead th {
+        padding: 10px 12px;
+        font-size: 10px;
+    }
+
+    .sentinel-table tbody td {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    /* Map containers */
+    .map-container {
+        height: 280px;
+    }
+
+    .map-container-lg {
+        height: calc(100vh - 240px);
+        min-height: 350px;
+    }
+
+    /* Lookup search box */
+    .lookup-search-box {
+        max-width: 100%;
+    }
+
+    .lookup-search-box input {
+        padding: 14px 52px 14px 42px;
+        font-size: 14px;
+    }
+
+    .lookup-search-box .search-btn {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+
+    /* IP Summary bar (lookup page) */
+    #ip-summary-bar .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    /* Risk meter stacking */
+    .risk-meter {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .risk-meter-bar {
+        width: 100%;
+    }
+
+    .risk-score-display {
+        font-size: 22px;
+    }
+
+    /* Intel detail rows */
+    .intel-detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 8px 0;
+    }
+
+    .intel-detail-value {
+        font-size: 13px;
+    }
+
+    /* Buttons */
+    .btn-sentinel {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .btn-sentinel-sm {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+
+    /* Filter bars (logs, alerts) */
+    .sentinel-select,
+    .sentinel-input {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    /* Pagination */
+    .pagination-sentinel {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .pagination-sentinel button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    /* Charts */
+    .chart-container {
+        height: auto;
+        min-height: 200px;
+    }
+
+    /* Drag and drop area */
+    .drag-drop-area {
+        padding: 28px 16px;
+    }
+
+    .upload-icon {
+        font-size: 36px;
+    }
+
+    .upload-text {
+        font-size: 14px;
+    }
+
+    /* Preloader — ensure centered on mobile */
+    #preloader {
+        padding: 20px;
+    }
+
+    .preloader-content {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .preloader-title {
+        font-size: 24px;
+    }
+
+    .preloader-subtitle {
+        font-size: 9px;
+        letter-spacing: 2px;
+    }
+
+    .preloader-logo-container {
+        width: 90px;
+        height: 90px;
+    }
+
+    .preloader-logo {
+        width: 60px;
+        height: 60px;
+    }
+
+    /* Brand logo in sidebar */
+    .sidebar-brand {
+        padding: 18px 16px;
+    }
+
+    .brand-logo-wrapper {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* Sidebar nav */
+    .sidebar-nav a {
+        font-size: 13px;
+        padding: 10px 20px;
+    }
+}
+
+/* ---------- Responsive: Small Phone (≤480px) ---------- */
+@media (max-width: 480px) {
+    .top-header {
+        padding: 0 12px;
+        height: 50px;
+    }
+
+    .sidebar-toggle {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+    }
+
+    .page-title {
+        font-size: 14px;
+    }
+
+    .page-title i {
+        font-size: 14px;
+        margin-right: 6px;
+    }
+
+    .header-right {
+        gap: 8px;
+    }
+
+    .header-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .page-content {
+        padding: 12px;
+    }
+
+    .grid-2, .grid-3, .grid-4, .grid-5 {
+        gap: 12px;
+    }
+
+    .glass-card {
+        padding: 14px;
+    }
+
+    .stat-card {
+        padding: 14px 16px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 20px;
+    }
+
+    .stat-card .stat-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .map-container {
+        height: 220px;
+    }
+
+    .map-container-lg {
+        height: calc(100vh - 200px);
+        min-height: 280px;
+    }
+
+    .lookup-search-box input {
+        padding: 12px 50px 12px 38px;
+        font-size: 13px;
+    }
+
+    .lookup-search-box .search-icon {
+        left: 14px;
+        font-size: 16px;
+    }
+
+    .lookup-search-box .search-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+
+    .risk-score-display {
+        font-size: 18px;
+    }
+
+    .glass-card .card-title {
+        font-size: 13px;
+    }
+
+    .sentinel-table thead th {
+        padding: 8px 10px;
+        font-size: 9px;
+    }
+
+    .sentinel-table tbody td {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .drag-drop-area {
+        padding: 20px 12px;
+    }
+
+    .upload-icon {
+        font-size: 30px;
+    }
+
+    .upload-text {
+        font-size: 13px;
+    }
+
+    .upload-subtext {
+        font-size: 11px;
+    }
+
+    .btn-sentinel {
+        padding: 7px 14px;
+        font-size: 12px;
+    }
+
+    /* Badges on small screens */
+    .badge-threat {
+        font-size: 9px;
+        padding: 2px 6px;
+    }
+
+    .badge-severity,
+    .badge-status {
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+
+    .intel-detail-label {
+        font-size: 11px;
+    }
+
+    .intel-detail-value {
+        font-size: 12px;
+    }
+
+    .preloader-content {
+        max-width: 260px;
+    }
+
+    .preloader-title {
+        font-size: 20px;
+    }
+
+    .preloader-bar {
+        width: 160px;
+        margin: 0 auto;
+    }
+
+    .preloader-logo-container {
+        width: 80px;
+        height: 80px;
+    }
+
+    .preloader-logo {
+        width: 50px;
+        height: 50px;
     }
 }
 
