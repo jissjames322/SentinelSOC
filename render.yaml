@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: redeye
+    env: python
+    buildCommand: "pip install -r requirements.txt && flask db upgrade"
+    startCommand: "gunicorn run:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true

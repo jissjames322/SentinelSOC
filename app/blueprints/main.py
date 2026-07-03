@@ -1,5 +1,6 @@
 import logging
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, send_from_directory, current_app
+import os
 from app.repositories.ip_repository import IPRepository
 from app.repositories.event_repository import EventRepository
 from app.repositories.alert_repository import AlertRepository
@@ -12,6 +13,11 @@ main = Blueprint("main", __name__)
 def dashboard():
     """Renders the main dashboard page."""
     return render_template("dashboard.html")
+
+@main.route("/sw.js")
+def serve_sw():
+    """Serves the service worker from the root for proper scope."""
+    return send_from_directory(os.path.join(current_app.root_path, 'static'), 'sw.js', mimetype='application/javascript')
 
 @main.route("/lookup")
 def lookup():
