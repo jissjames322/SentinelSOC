@@ -75,8 +75,8 @@ Ensure you have **Python 3.12+** installed on your system.
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/jissjames322/SentinelSOC.git
-cd SentinelSOC
+git clone https://github.com/jissjames322/RedEye.git
+cd RedEye
 ```
 
 ### 3. Create and Activate Virtual Environment
